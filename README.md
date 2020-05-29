@@ -25,6 +25,9 @@ To make it easier you can also create an alias for the gimme-aws-creds command w
 
 ```bash
 # make sure you have the "~/.okta_aws_login_config" locally first!
+# Get ~/.okta_aws_login_config file from https://hub.ghx.com/display/CSGHX/%5BHOWTO%5D+Use+the+AWS+CLI+with+Okta 
+# update it for your AWS account and store in local ~/.okta_aws_login_config
+
 touch ~/.okta_aws_login_config && \
 alias gimme-aws-creds="docker run -it --rm \
   -v ~/.aws/credentials:/root/.aws/credentials \
