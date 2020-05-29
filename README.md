@@ -43,15 +43,6 @@ The config file follows a [configfile](https://docs.python.org/3/library/configp
 By default, it is located in $HOME/.okta_aws_login_config
 
 
-
-### Viewing Profiles
-
-`gimme-aws-creds --action-list-profiles` will go to your okta config file and print out all profiles created and their settings.
-
-### Viewing roles
-
-`gimme-aws-creds --action-list-roles` will print all available roles to STDOUT without retrieving their credentials.
-
 ### Generate credentials
 
 `gimme-aws-creds` will print out credentials in export
@@ -65,5 +56,15 @@ By default, it is located in $HOME/.okta_aws_login_config
 `gimme-aws-creds --action-store-json-creds` will store JSON formatted credentials from `stdin` to
 aws credentials file, eg: `gimme-aws-creds -o json | gimme-aws-creds --action-store-json-creds`.
 Data can be modified by scripts on the way.
+
+### Viewing Profiles
+
+`gimme-aws-creds --action-list-profiles` will go to your okta config file and print out all profiles created and their settings.
+
+### Viewing roles
+
+`gimme-aws-creds --action-list-roles` will print all available roles to STDOUT without retrieving their credentials.
+
+
 
 
