@@ -13,39 +13,7 @@ With gimme-aws-creds all you need to know is your username, password, Okta url a
 
 [Okta SAML integration to AWS using the AWS App](https://help.okta.com/en/prod/Content/Topics/Miscellaneous/References/OktaAWSMulti-AccountConfigurationGuide.pdf)
 
-Python 3
-
-### Optional
-
-[Gimme-creds-lambda](https://github.com/Nike-Inc/gimme-aws-creds/tree/master/lambda) can be used as a proxy to the Okta APIs needed by gimme-aws-creds.  This removes the requirement of an Okta API key.  Gimme-aws-creds authenticates to gimme-creds-lambda using OpenID Connect and the lambda handles all interactions with the Okta APIs.  Alternately, you can set the `OKTA_API_KEY` environment variable and the `gimme_creds_server` configuration value to 'internal' to call the Okta APIs directly from gimme-aws-creds.
-
 ## Installation
-
-This is a Python 3 project.
-
-Install/Upgrade from PyPi:
-
-```bash
-pip3 install --upgrade gimme-aws-creds
-```
-
-__OR__
-
-Install/Upgrade the latest gimme-aws-creds package direct from GitHub:
-
-```bash
-pip3 install --upgrade git+git://github.com/Nike-Inc/gimme-aws-creds.git
-```
-
-__OR__
-
-Install the gimme-aws-creds package if you have already cloned the source:
-
-```bash
-python3 setup.py install
-```
-
-__OR__
 
 Build the docker image locally:
 
@@ -215,84 +183,4 @@ For changing variables outside of this, you'd need to create a separate profile 
 aws credentials file, eg: `gimme-aws-creds -o json | gimme-aws-creds --action-store-json-creds`.
 Data can be modified by scripts on the way.
 
-### Usage in python code
 
-Configuration and interactions can be configured using [`gimme_aws_creds.ui`](./gimme_aws_creds/ui.py),
-UserInterfaces support all kind of interactions within library including: asking for input, `sys.argv` and `os.environ`
-overrides.
-
-```python
-import sys
-import gimme_aws_creds.main
-import gimme_aws_creds.ui
-
-account_ids = sys.argv[1:] or [
-  '123456789012',
-  '120123456789',
-]
-
-pattern = "|".join(sorted(set(account_ids)))
-pattern = '/:({}):/'.format(pattern)
-ui = gimme_aws_creds.ui.CLIUserInterface(argv=[sys.argv[0], '--roles', pattern])
-creds = gimme_aws_creds.main.GimmeAWSCreds(ui=ui)
-
-# Print out all selected roles:
-for role in creds.aws_selected_roles:
-    print(role)
-
-# Generate credentials overriding profile name with `okta-<account_id>`
-for data in creds.iter_selected_aws_credentials():
-    arn = data['role']['arn']
-    account_id = None
-    for piece in arn.split(':'):
-        if len(piece) == 12 and piece.isdigit():
-            account_id = piece
-            break
-  
-    if account_id is None:
-        raise ValueError("Didn't find aws_account_id (12 digits) in {}".format(arn))
-
-    data['profile']['name'] = 'okta-{}'.format(account_id)
-    creds.write_aws_creds_from_data(data)
-
-```
-
-## MFA security keys support
-
-gimme-aws-creds works both on FIDO1 enabled org and WebAuthN enabled org
-
-Note that FIDO1 will probably be deprecated in the near future as standards moves forward to WebAuthN
-
-WebAuthN support is only available for usb security keys (gimme-aws-creds relies on the yubico fido2 lib). Authenticator such as Windows Hello or Touch ID are not yet supported.
-Actually it has only been tested with USB U2F keys & yubikeys.
-
-## Running Tests
-
-You can run all the unit tests using nosetests. Most of the tests are mocked.
-
-```bash
-nosetests --verbosity=2 tests/
-```
-
-## Maintenance
-
-This project is maintained by [Ann Wallace](https://github.com/anners), [Eric Pierce](https://github.com/epierce), and [Justin Wiley](https://github.com/sector95).
-
-## Thanks and Credit
-
-I came across [okta_aws_login](https://github.com/nimbusscale/okta_aws_login) written by Joe Keegan, when I was searching for a CLI tool that generates AWS tokens via Okta. Unfortunately it hasn't been updated since 2015 and didn't seem to work with the current Okta version. But there was still some great code I was able to reuse under the MIT license for gimme-aws-creds. I have noted in the comments where I used his code, to make sure he receives proper credit.
-
-## Etc
-
-[Okta's Java tool](https://github.com/oktadeveloper/okta-aws-cli-assume-role)
-
-[AWS - How to Implement Federated API and CLI Access Using SAML 2.0 and AD FS](https://aws.amazon.com/blogs/security/how-to-implement-federated-api-and-cli-access-using-saml-2-0-and-ad-fs/)
-
-## [Contributing](https://github.com/Nike-Inc/gimme-aws-creds/blob/master/CONTRIBUTING.md)
-
-## License
-
-Gimme AWS Creds is released under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-[license]:LICENSE
-[license img]:https://img.shields.io/badge/License-Apache%202-blue.svg
